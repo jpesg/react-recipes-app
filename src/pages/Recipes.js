@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import RecipeList from "../components/RecipeList";
 import Search from "../components/Search";
 import { recipeData } from "../data/tempList";
-import Recipe from "../components/Recipe";
+//import Recipe from "../components/Recipe";
 
 export default class Recipes extends Component {
   constructor(props) {
@@ -15,23 +15,40 @@ export default class Recipes extends Component {
     search: "",
     url: `https://www.food2fork.com/api/search?key=${
       process.env.REACT_APP_API_KEY
-    }`
+    }`,
+    base_url: `https://www.food2fork.com/api/search?key=${
+      process.env.REACT_APP_API_KEY
+    }`,
+    query: "&q=",
+    error: ""
   };
 
   async getRecipes() {
     try {
       const data = await fetch(this.state.url);
       const jsonData = await data.json();
-      this.setState({
-        recipes: jsonData.recipes
-      });
+
+      if (jsonData.recipes.length === 0) {
+        this.setState({
+          error:
+            "sorry but your search did not turn any recipes, please try again or press search icon for the most popular recipes"
+        });
+      } else {
+        this.setState({
+          recipes: jsonData.recipes,
+          error: ""
+        });
+      }
     } catch (error) {
       console.log(error);
+      this.setState({
+        error: "Server Problem"
+      });
     }
   }
 
   componentDidMount() {
-    //this.getRecipes();
+    this.getRecipes();
   }
 
   handleChange = e => {
@@ -44,6 +61,16 @@ export default class Recipes extends Component {
   handleSubmit = e => {
     e.preventDefault();
     console.log("handleSubmit");
+
+    const { base_url, query, search } = this.state;
+
+    this.setState(
+      {
+        url: `${base_url}${query}${search}`,
+        search: ""
+      },
+      () => this.getRecipes()
+    );
   };
 
   render() {
@@ -56,9 +83,19 @@ export default class Recipes extends Component {
           handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
         />
-        <RecipeList
-          recipes={this.state.recipes > 0 ? this.state.recipes : recipeData}
-        />
+        {this.state.error ? (
+          <section>
+            <div className="row">
+              <div className="col">
+                <h2 className="text-orange text-center text-uppercase mt-5">
+                  {this.state.error}
+                </h2>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <RecipeList recipes={this.state.recipes} />
+        )}
       </React.Fragment>
     );
   }
