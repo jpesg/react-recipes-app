@@ -13,7 +13,7 @@ export default class Recipes extends Component {
     search: ""
   };
 
-  handleChane = e => {
+  handleChange = e => {
     console.log("handlechange");
     this.setState({
       search: e.target.value
@@ -31,7 +31,7 @@ export default class Recipes extends Component {
         Recipe page
         <Search
           search={this.state.search}
-          handleChange={this.handleChane}
+          handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
         />
         <RecipeList recipes={this.state.recipes} />
