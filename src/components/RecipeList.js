@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import Recipe from "./Recipe";
+
+import { recipeData } from "../data/tempList";
+
 export default class RecipeList extends Component {
   render() {
     const { recipes } = this.props;
@@ -23,3 +26,7 @@ export default class RecipeList extends Component {
     );
   }
 }
+
+RecipeList.defaultProps = {
+  recipes: recipeData
+};
